@@ -239,6 +239,13 @@ const MOVIES_DATA: MovieEntry[] = [
         "summary": "The fallout from Tahir's shocking decision forces Çağla and Doğan into a fragile alliance, while Melek's sacrifice becomes the center of a painful family reckoning that could change everything.",
         "date": "2026-04-22",
         "status": "watched"
+      },
+      {
+        "number": 15,
+        "title": "Episode 15",
+        "summary": "TBD",
+        "date": "2026-05-13",
+        "status": "upcoming"
       }
     ],
     "videos": [
