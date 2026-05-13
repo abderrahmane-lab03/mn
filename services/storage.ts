@@ -243,7 +243,7 @@ const MOVIES_DATA: MovieEntry[] = [
       {
         "number": 15,
         "title": "Episode 15",
-        "summary": "TBD",
+        "summary": "Episode 15 of My Brother brings a turning point in the story, as family tensions rise and hidden truths begin to surface. The brothers face new conflicts that test their loyalty and trust, while the romantic subplot grows more complicated with misunderstandings and outside pressures. As past secrets are revealed, relationships are shaken, and the episode closes with a dramatic cliffhanger that sets the stage for even greater challenges in the next chapter.",
         "date": "2026-05-13",
         "status": "upcoming"
       }
@@ -263,7 +263,7 @@ const MOVIES_DATA: MovieEntry[] = [
       { "title": "Episode 12", "url": "https://drive.google.com/file/d/1JEpVARvpzxoEhowo0WGFcdr_Ll3rxBFY/view?usp=sharing", "type": "local" },
       { "title": "Episode 13", "url": "https://drive.google.com/file/d/1E25jTHuSIX3LvKXIOFloku5a08T_WIJl/view?usp=sharing", "type": "local" },
       { "title": "Episode 14", "url": "https://drive.google.com/file/d/1bT38ZEVE7y-5Nhs4WKO8MHYTUNoZvQt1/view?usp=sharing", "type": "local" },
-      
+      { "title": "Episode 15", "url": "https://drive.google.com/file/d/1ji54Q8Zn77jWb5-dhuJeq7tWXIqP3VPj/view?usp=sharing", "type": "local" }
     ]
   },
   {
