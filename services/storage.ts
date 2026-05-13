@@ -245,7 +245,7 @@ const MOVIES_DATA: MovieEntry[] = [
         "title": "Episode 15",
         "summary": "Episode 15 of My Brother brings a turning point in the story, as family tensions rise and hidden truths begin to surface. The brothers face new conflicts that test their loyalty and trust, while the romantic subplot grows more complicated with misunderstandings and outside pressures. As past secrets are revealed, relationships are shaken, and the episode closes with a dramatic cliffhanger that sets the stage for even greater challenges in the next chapter.",
         "date": "2026-05-13",
-        "status": "upcoming"
+        "status": "watched"
       }
     ],
     "videos": [
