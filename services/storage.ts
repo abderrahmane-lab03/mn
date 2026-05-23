@@ -134,7 +134,7 @@ const MOVIES_DATA: MovieEntry[] = [
     "status": "watched",
     "date": "2026-04-08",
     "genres": ["Drama", "Family", "Psychological"],
-    "duration": "Weekly Series • 14 Episodes Total",
+    "duration": "Weekly Series • 16 Episodes Total",
     "episodeRuntimeMinutes": 190,
     "story": "The Turkish series Abi (My Brother) revolves around the idea that family is a true test. It follows the story of Çağla, a lawyer who was pushed into her profession by the harshness of life and the absence of a real family. On the other side stands Doğan, a man from a large and wealthy family who ran away in an attempt to escape a past filled with secrets. But life forces a confrontation, and the doors to a deep relationship open, where each of them carries postponed wounds—wounds they can neither open nor close… wounds called family. New episodes air weekly.",
     "posterUrl": "/assets/ABIM/abi.png",
@@ -246,6 +246,13 @@ const MOVIES_DATA: MovieEntry[] = [
         "summary": "Episode 15 of My Brother brings a turning point in the story, as family tensions rise and hidden truths begin to surface. The brothers face new conflicts that test their loyalty and trust, while the romantic subplot grows more complicated with misunderstandings and outside pressures. As past secrets are revealed, relationships are shaken, and the episode closes with a dramatic cliffhanger that sets the stage for even greater challenges in the next chapter.",
         "date": "2026-05-13",
         "status": "watched"
+      },
+      {
+        "number": 16,
+        "title": "Episode 16",
+        "summary": "In Episode 16 of My Brother, the story takes a dramatic turn as the brothers confront the consequences of their recent actions. The family dynamics become even more strained as new secrets are revealed, and the romantic subplot reaches a boiling point with unexpected twists. As tensions rise, the episode ends with a shocking revelation that leaves viewers eager for the next installment.",
+        "date": "2026-05-20",
+        "status": "watched"
       }
     ],
     "videos": [
@@ -263,7 +270,8 @@ const MOVIES_DATA: MovieEntry[] = [
       { "title": "Episode 12", "url": "https://drive.google.com/file/d/1JEpVARvpzxoEhowo0WGFcdr_Ll3rxBFY/view?usp=sharing", "type": "local" },
       { "title": "Episode 13", "url": "https://drive.google.com/file/d/1E25jTHuSIX3LvKXIOFloku5a08T_WIJl/view?usp=sharing", "type": "local" },
       { "title": "Episode 14", "url": "https://drive.google.com/file/d/1bT38ZEVE7y-5Nhs4WKO8MHYTUNoZvQt1/view?usp=sharing", "type": "local" },
-      { "title": "Episode 15", "url": "https://drive.google.com/file/d/1ji54Q8Zn77jWb5-dhuJeq7tWXIqP3VPj/view?usp=sharing", "type": "local" }
+      { "title": "Episode 15", "url": "https://drive.google.com/file/d/1ji54Q8Zn77jWb5-dhuJeq7tWXIqP3VPj/view?usp=sharing", "type": "local" },
+      { "title": "Episode 16", "url": "https://drive.google.com/file/d/1P0tsWBDQhKEl-OKvWDWfE4Y1mW8-hS6K/view?usp=sharing", "type": "local" }
     ]
   },
   {
