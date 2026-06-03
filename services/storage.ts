@@ -253,6 +253,13 @@ const MOVIES_DATA: MovieEntry[] = [
         "summary": "In Episode 16 of My Brother, the story takes a dramatic turn as the brothers confront the consequences of their recent actions. The family dynamics become even more strained as new secrets are revealed, and the romantic subplot reaches a boiling point with unexpected twists. As tensions rise, the episode ends with a shocking revelation that leaves viewers eager for the next installment.",
         "date": "2026-05-20",
         "status": "watched"
+      },
+      {
+        "number": 17,
+        "title": "Episode 17",
+        "summary": "Episode 17 of My Brother delves deeper into the complexities of the characters' relationships and the consequences of their actions. As the story unfolds, new challenges arise that test the brothers' resolve and force them to confront their deepest fears and insecurities.",
+        "date": "2026-06-03",
+        "status": "watched"
       }
     ],
     "videos": [
@@ -271,7 +278,8 @@ const MOVIES_DATA: MovieEntry[] = [
       { "title": "Episode 13", "url": "https://drive.google.com/file/d/1E25jTHuSIX3LvKXIOFloku5a08T_WIJl/view?usp=sharing", "type": "local" },
       { "title": "Episode 14", "url": "https://drive.google.com/file/d/1bT38ZEVE7y-5Nhs4WKO8MHYTUNoZvQt1/view?usp=sharing", "type": "local" },
       { "title": "Episode 15", "url": "https://drive.google.com/file/d/1ji54Q8Zn77jWb5-dhuJeq7tWXIqP3VPj/view?usp=sharing", "type": "local" },
-      { "title": "Episode 16", "url": "https://drive.google.com/file/d/1P0tsWBDQhKEl-OKvWDWfE4Y1mW8-hS6K/view?usp=sharing", "type": "local" }
+      { "title": "Episode 16", "url": "https://drive.google.com/file/d/1P0tsWBDQhKEl-OKvWDWfE4Y1mW8-hS6K/view?usp=sharing", "type": "local" },
+      { "title": "Episode 17", "url": "https://drive.google.com/file/d/1RI-TzJdJ2Q_tityU02MFZuwxKuHtNwJl/view?usp=sharing", "type": "local" }
     ]
   },
   {
