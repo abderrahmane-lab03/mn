@@ -132,9 +132,9 @@ const MOVIES_DATA: MovieEntry[] = [
     "originalTitle": "Abi",
     "type": "tv",
     "status": "watched",
-    "date": "2026-04-08",
+    "date": "2026-06-10",
     "genres": ["Drama", "Family", "Psychological"],
-    "duration": "Weekly Series • 16 Episodes Total",
+    "duration": "Weekly Series • 18 Episodes Total",
     "episodeRuntimeMinutes": 190,
     "story": "The Turkish series Abi (My Brother) revolves around the idea that family is a true test. It follows the story of Çağla, a lawyer who was pushed into her profession by the harshness of life and the absence of a real family. On the other side stands Doğan, a man from a large and wealthy family who ran away in an attempt to escape a past filled with secrets. But life forces a confrontation, and the doors to a deep relationship open, where each of them carries postponed wounds—wounds they can neither open nor close… wounds called family. New episodes air weekly.",
     "posterUrl": "/assets/ABIM/abi.png",
@@ -260,6 +260,13 @@ const MOVIES_DATA: MovieEntry[] = [
         "summary": "Episode 17 of My Brother delves deeper into the complexities of the characters' relationships and the consequences of their actions. As the story unfolds, new challenges arise that test the brothers' resolve and force them to confront their deepest fears and insecurities.",
         "date": "2026-06-03",
         "status": "watched"
+      },
+      {
+        "number": 18,
+        "title": "Episode 18",
+        "summary": "The season finale brings every uncovered secret to a head. Çağla and Doğan face their ultimate reckoning, and the family must decide whether they can heal together or remain broken by the wounds they carry.",
+        "date": "2026-06-10",
+        "status": "watched"
       }
     ],
     "videos": [
@@ -279,7 +286,8 @@ const MOVIES_DATA: MovieEntry[] = [
       { "title": "Episode 14", "url": "https://drive.google.com/file/d/1bT38ZEVE7y-5Nhs4WKO8MHYTUNoZvQt1/view?usp=sharing", "type": "local" },
       { "title": "Episode 15", "url": "https://drive.google.com/file/d/1ji54Q8Zn77jWb5-dhuJeq7tWXIqP3VPj/view?usp=sharing", "type": "local" },
       { "title": "Episode 16", "url": "https://drive.google.com/file/d/1P0tsWBDQhKEl-OKvWDWfE4Y1mW8-hS6K/view?usp=sharing", "type": "local" },
-      { "title": "Episode 17", "url": "https://drive.google.com/file/d/1RI-TzJdJ2Q_tityU02MFZuwxKuHtNwJl/view?usp=sharing", "type": "local" }
+      { "title": "Episode 17", "url": "https://drive.google.com/file/d/1RI-TzJdJ2Q_tityU02MFZuwxKuHtNwJl/view?usp=sharing", "type": "local" },
+      { "title": "Episode 18", "url": "https://drive.google.com/file/d/1DNoddD7bkjcQEz79chOglYIT0TxfYnsF/view?usp=sharing", "type": "local" }
     ]
   },
   {
