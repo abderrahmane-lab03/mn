@@ -1,7 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { Download } from 'lucide-react';
 import { BrowserRouter, Routes, Route, useNavigate, useParams, useLocation } from 'react-router-dom';
-import { motion, AnimatePresence } from 'motion/react';
 import { getEntriesAsync } from './services/storage';
 import { MovieEntry } from './types';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -12,8 +11,6 @@ import { AppContextProvider } from './context/AppContext';
 const Home = lazy(() => import('./views/Home').then(m => ({ default: m.Home })));
 const Details = lazy(() => import('./views/Details').then(m => ({ default: m.Details })));
 const IntroPage = lazy(() => import('./views/IntroPage').then(m => ({ default: m.IntroPage })));
-const AddMovie = lazy(() => import('./views/AddMovie').then(m => ({ default: m.AddMovie })));
-
 const SELECTED_USER_KEY = 'movie-night-selected-user';
 
 type BeforeInstallPromptEvent = Event & {
@@ -28,7 +25,7 @@ const LoadingFallback = () => (
       <div className="inline-block">
         <div className="animate-spin w-12 h-12 border-4 border-popcorn border-t-transparent rounded-full mb-4"></div>
       </div>
-      <p className="text-ink-300 text-lg font-bold">Loading Cinema...</p>
+      <p className="text-ink-300 text-lg">Loading...</p>
     </div>
   </div>
 );
@@ -96,7 +93,7 @@ const InstallAppButton = () => {
       aria-label="Install this app"
     >
       <Download size={16} />
-      Install App
+      Install app
     </button>
   );
 };
@@ -142,6 +139,8 @@ const AppContent = () => {
     };
     
     loadData();
+  // Load data once on mount; location.pathname is read but should not re-trigger fetches
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const reloadEntries = async () => {
@@ -158,100 +157,42 @@ const AppContent = () => {
     return <LoadingFallback />;
   }
 
+  // Router Logic
   return (
     <Suspense fallback={<LoadingFallback />}>
-      <AnimatePresence mode="wait">
-        {showIntro ? (
-          <motion.div
-            key="intro-screen"
-            initial={{ opacity: 0, scale: 0.98 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <IntroPage 
-              entries={entries}
-              onContinue={() => setShowIntro(false)}
-            />
-          </motion.div>
-        ) : (
-          <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-              <Route 
-                path="/" 
-                element={
-                  <motion.div
-                    key="home-page"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -12 }}
-                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <Home
-                      entries={entries}
-                      onNavigate={navigateTo}
-                      selectedUser={selectedUser}
-                      onSelectUser={setSelectedUser}
-                    />
-                  </motion.div>
-                } 
-              />
-              <Route 
-                path="/add" 
-                element={
-                  <motion.div
-                    key="add-page"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -12 }}
-                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <AddMovie />
-                  </motion.div>
-                } 
-              />
-              <Route 
-                path="/movie/:id" 
-                element={
-                  <motion.div
-                    key={`movie-details-${location.pathname}`}
-                    initial={{ opacity: 0, y: 16, scale: 0.99 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 12, scale: 0.99 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <MovieDetails
-                      entries={entries}
-                      onBack={() => navigateTo('home')}
-                      selectedUser={selectedUser}
-                      reloadEntries={reloadEntries}
-                    />
-                  </motion.div>
-                } 
-              />
-              <Route 
-                path="*" 
-                element={
-                  <motion.div
-                    key="not-found"
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -12 }}
-                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <Home
-                      entries={entries}
-                      onNavigate={navigateTo}
-                      selectedUser={selectedUser}
-                      onSelectUser={setSelectedUser}
-                    />
-                  </motion.div>
-                } 
-              />
-            </Routes>
-          </AnimatePresence>
-        )}
-      </AnimatePresence>
+      {showIntro ? (
+        <div className="animate-fade-in">
+          <IntroPage 
+            entries={entries}
+            onContinue={() => setShowIntro(false)}
+            selectedUser={selectedUser}
+            onSelectUser={setSelectedUser}
+          />
+        </div>
+      ) : (
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <div className="animate-fade-in">
+                <Home entries={entries} onNavigate={navigateTo} selectedUser={selectedUser} />
+              </div>
+            } 
+          />
+          <Route 
+            path="/movie/:id" 
+            element={<MovieDetails entries={entries} onBack={() => navigateTo('home')} selectedUser={selectedUser} reloadEntries={reloadEntries} />} 
+          />
+          <Route 
+            path="*" 
+            element={
+              <div className="animate-fade-in">
+                <Home entries={entries} onNavigate={navigateTo} selectedUser={selectedUser} />
+              </div>
+            } 
+          />
+        </Routes>
+      )}
     </Suspense>
   );
 };
@@ -264,8 +205,8 @@ const MovieDetails = ({ entries, onBack, selectedUser, reloadEntries }: { entrie
     return (
       <div className="min-h-screen bg-night-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-xl text-ink-300 mb-4 font-bold">Title not found</p>
-          <button onClick={onBack} className="px-5 py-2.5 bg-popcorn text-night-900 rounded-xl font-black hover:bg-popcorn/90 transition-colors">
+          <p className="text-xl text-ink-300 mb-4">Movie not found</p>
+          <button onClick={onBack} className="px-4 py-2 bg-popcorn text-night-900 rounded-lg hover:bg-popcorn/90 transition-colors">
             Go Back
           </button>
         </div>

@@ -14,7 +14,7 @@ interface DetailsProps {
 }
 
 // Watchdog component at module scope to avoid re-creation on every render
-function IframeWatchdog({ setFailed, timeout = 12000 }: { setFailed: () => void; timeout?: number }) {
+function IframeWatchdog({ setFailed, timeout = 4000 }: { setFailed: () => void; timeout?: number }) {
   useEffect(() => {
     const t = setTimeout(() => setFailed(), timeout);
     return () => clearTimeout(t);
@@ -116,24 +116,10 @@ export const Details = ({ entry, onBack, selectedUser }: DetailsProps) => {
 
     return null;
   };
-
-  const getYouTubeVideoId = (url: string) => {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : null;
-  };
   
-  const youtubeVideoId = safeVideoUrl ? getYouTubeVideoId(safeVideoUrl) : null;
-
   const getEmbedUrl = (url: string) => {
-    if (youtubeVideoId) {
-      return `https://www.youtube-nocookie.com/embed/${youtubeVideoId}?playsinline=1&enablejsapi=1&rel=0&modestbranding=1&autoplay=0`;
-    }
     const fileId = getGoogleDriveFileId(url);
-    if (fileId) {
-      return `https://drive.google.com/file/d/${fileId}/preview`;
-    }
-    return url;
+    return fileId ? `https://drive.google.com/file/d/${fileId}/preview` : url;
   };
 
   const [iframeLoaded, setIframeLoaded] = useState(false);
@@ -357,14 +343,14 @@ export const Details = ({ entry, onBack, selectedUser }: DetailsProps) => {
             </div>
           </div>
 
-          {/* Action Buttons & Player Controls */}
-          <div className="flex flex-wrap items-center gap-3 mt-8 md:mt-0">
+          {/* Download Section */}
+          <div className="flex items-center gap-6 mt-8 md:mt-0">
             {/* Download Button */}
             {safeVideoUrl && (
               <button
                 onClick={handleDownload}
                 aria-label={`Download ${entry.title} video`}
-                className="flex items-center gap-1.5 bg-green-400/15 px-3.5 py-2 rounded-full hover:bg-green-400/25 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400/50"
+                className="flex items-center gap-1.5 bg-green-400/15 px-3 py-2 rounded-full hover:bg-green-400/25 transition-colors focus:outline-none focus:ring-2 focus:ring-green-400/50"
               >
                 <Download size={16} className="text-green-400" />
                 <span className="text-[10px] font-bold text-green-400/80">Download</span>
@@ -373,86 +359,81 @@ export const Details = ({ entry, onBack, selectedUser }: DetailsProps) => {
 
             <button
               onClick={handleRefresh}
-              aria-label="Refresh player"
+              aria-label="Refresh page"
               title="Refresh"
-              className="flex items-center gap-1.5 bg-sky-400/15 px-3.5 py-2 rounded-full hover:bg-sky-400/25 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-400/50"
+              className="flex items-center gap-1.5 bg-sky-400/15 px-3 py-2 rounded-full hover:bg-sky-400/25 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-400/50"
             >
               <RefreshCw size={16} className="text-sky-400" />
-              <span className="text-[10px] font-bold text-sky-400/80">Reload Player</span>
+              <span className="text-[10px] font-bold text-sky-400/80">Refresh</span>
             </button>
           </div>
         </div>
 
-        {/* Hero Media Section (Poster + In-App Video Player) */}
-        <div ref={videoSectionRef} className="flex flex-col md:flex-row gap-0 mb-10 bg-black/60 rounded-xl md:rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-          {/* Poster - Shown on desktop/tablet, hidden on mobile for maximum video player space */}
-          <div className="hidden md:block md:w-[260px] lg:w-[300px] shrink-0 relative group border-r border-white/5">
+        {/* Hero Media Section (Poster + Trailer) */}
+        <div ref={videoSectionRef} className="flex flex-col md:flex-row gap-1 mb-10 bg-black/40 rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
+          {/* Poster */}
+          <div className="md:w-[300px] shrink-0 relative group border-r border-white/5">
             <ImageWithSkeleton
               src={entry.posterUrl || 'https://via.placeholder.com/300x450'}
               alt={`${entry.title} poster`}
-              className="w-full h-full object-cover min-h-[360px]"
+              className="w-full h-full object-cover aspect-[2/3] md:aspect-auto"
               containerClassName="w-full h-full"
               onError={onImageError}
             />
           </div>
 
-          {/* Video Preview Area - Optimized for phone screen touch & controls */}
-          <div className="flex-grow relative w-full h-[260px] min-[400px]:h-[310px] sm:h-[380px] md:h-[460px] lg:h-[520px] bg-black flex items-center justify-center overflow-hidden">
+          {/* Video Preview Area - Netflix Style */}
+          <div className="flex-grow relative aspect-video md:aspect-auto bg-gradient-to-b from-[#1e293b] to-black flex items-center justify-center group overflow-hidden">
             {safeVideoUrl ? (
               <>
                 {isLocalVideo && !isGoogleDriveUrl ? (
-                  /* 1. Direct Local MP4 File Player */
+                  // Local video player
                   <video
                     ref={videoRef}
                     src={safeVideoUrl}
                     controls
-                    playsInline
-                    webkit-playsinline="true"
-                    preload="metadata"
                     onTimeUpdate={handleTimeUpdate}
-                    className="w-full h-full bg-black object-contain"
+                    className="absolute inset-0 w-full h-full bg-black"
                   >
                     Your browser does not support the video tag.
                   </video>
                 ) : (
-                  /* 2. Google Drive / YouTube Embed Player */
+                  // YouTube embed or Google Drive embed (both use iframe)
                   <>
                     <iframe
                       key={`video-${selectedEpisodeIndex}`}
                       src={getEmbedUrl(safeVideoUrl)}
                       title={isTv && entry.videos && entry.videos[selectedEpisodeIndex] ? entry.videos[selectedEpisodeIndex].title : (entry.videos?.[0]?.title || entry.title)}
-                      className="w-full h-full border-0 block"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share; fullscreen"
+                      className="absolute inset-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowFullScreen
                       onLoad={() => setIframeLoaded(true)}
                       onError={() => setIframeFailed(true)}
                     ></iframe>
-
-                    {/* Fallback Error Handler */}
-                    {iframeFailed && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/95 z-20">
-                        <div className="text-center px-6 max-w-md">
-                          <PlayCircle size={56} className="text-[#fbbf24] mb-3 mx-auto animate-pulse" />
-                          <p className="text-white font-bold text-base mb-1">In-App Player Needs Reload</p>
-                          <p className="text-ink-300 text-xs mb-5">
-                            Tap below to reload the video player directly on this screen.
-                          </p>
-                          <div className="flex items-center justify-center gap-3">
-                            <button
-                              type="button"
-                              onClick={handleRefresh}
-                              className="bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-2.5 rounded-lg text-xs transition-colors border border-white/10"
-                            >
-                              Reload Player ↻
-                            </button>
-                          </div>
+                    {/* If the embed can't play (owner disabled embedding or player error), show a visible fallback */}
+                    {iframeFailed && externalVideoLink && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/90 z-10">
+                        <div className="text-center px-6">
+                          <PlayCircle size={64} className="text-red-400 mb-4 mx-auto" />
+                          <p className="text-white font-bold text-lg mb-2">Video cannot be embedded</p>
+                          <p className="text-ink-300 text-sm mb-4">The video owner has disabled embedding</p>
+                          <a 
+                            href={externalVideoLink} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="inline-block bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-3 rounded-lg transition-colors"
+                          >
+                            Watch on External Site
+                          </a>
                         </div>
                       </div>
                     )}
-
-                    {/* In-Page Watchdog Timer */}
+                    
+                    {/* Bottom gradient overlay for Netflix-style effect */}
+                    <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/80 to-transparent pointer-events-none"></div>
+                    {/* Best-effort fallback timer: if the iframe hasn't loaded after 4s, show the external link */}
                     {(!iframeLoaded && !iframeFailed) && (
-                      <IframeWatchdog setFailed={() => setIframeFailed(true)} timeout={15000} />
+                      <IframeWatchdog setFailed={() => setIframeFailed(true)} timeout={4000} />
                     )}
                   </>
                 )}

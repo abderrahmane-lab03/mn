@@ -1,14 +1,77 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { MovieEntry } from '../types';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Lock } from 'lucide-react';
 import { calculateIntroStats } from '../utils/introStats';
 
 interface IntroPageProps {
   entries: MovieEntry[];
   onContinue: () => void;
+  selectedUser: 'jojo' | 'dodo' | null;
+  onSelectUser: (user: 'jojo' | 'dodo' | null) => void;
 }
 
-export const IntroPage = ({ entries, onContinue }: IntroPageProps) => {
+// User credentials loaded from environment variables
+const ADMIN_USERS: Record<string, string> = {
+  jojo: (import.meta.env.VITE_JOJO_PIN || '').trim(),
+  dodo: (import.meta.env.VITE_DODO_PIN || '').trim(),
+};
+
+export const IntroPage = ({ entries, onContinue, selectedUser, onSelectUser }: IntroPageProps) => {
+  const [showUserSelector, setShowUserSelector] = useState(false);
+  const [authenticatingUser, setAuthenticatingUser] = useState<'jojo' | 'dodo' | null>(null);
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState('');
+
+  const handleUserClick = (user: 'jojo' | 'dodo') => {
+    const userPin = ADMIN_USERS[user];
+
+    // If PIN is not configured, allow access instead of blocking the app.
+    if (!userPin) {
+      onSelectUser(user);
+      setShowUserSelector(false);
+      setAuthenticatingUser(null);
+      setPassword('');
+      setAuthError('');
+      onContinue();
+      return;
+    }
+
+    setAuthenticatingUser(user);
+    setPassword('');
+    setAuthError('');
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const normalizedPassword = password.trim();
+    const expectedPassword = authenticatingUser ? ADMIN_USERS[authenticatingUser] : '';
+
+    if (!expectedPassword) {
+      setAuthError('User PIN is not configured. Set VITE_JOJO_PIN and VITE_DODO_PIN in your environment.');
+      return;
+    }
+    
+    if (authenticatingUser && expectedPassword === normalizedPassword) {
+      // Authentication successful
+      onSelectUser(authenticatingUser);
+      setShowUserSelector(false);
+      setAuthenticatingUser(null);
+      setPassword('');
+      setAuthError('');
+      onContinue();
+    } else {
+      // Authentication failed
+      setAuthError('Incorrect password. Please try again.');
+      setPassword('');
+    }
+  };
+
+  const handleCloseAuth = () => {
+    setAuthenticatingUser(null);
+    setPassword('');
+    setAuthError('');
+  };
 
   const timeTogether = useMemo(() => calculateIntroStats(entries), [entries]);
 
@@ -90,7 +153,7 @@ export const IntroPage = ({ entries, onContinue }: IntroPageProps) => {
         {/* Continue Button */}
         <div className="flex justify-center">
           <button
-            onClick={onContinue}
+            onClick={() => setShowUserSelector(true)}
             className="group bg-gradient-to-r from-popcorn to-pink-400 hover:shadow-2xl hover:shadow-popcorn/50 text-night-900 font-bold py-3 px-10 md:px-12 rounded-full transition-all duration-300 flex items-center gap-2 hover:scale-105"
           >
             View Journal
@@ -98,6 +161,132 @@ export const IntroPage = ({ entries, onContinue }: IntroPageProps) => {
           </button>
         </div>
       </div>
+
+      {/* User Selector Modal */}
+      {showUserSelector && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <h2 className="text-2xl font-bold text-center mb-8 text-popcorn">Choose Your View</h2>
+            
+            <div className="space-y-4">
+              {/* N = JoJo Button */}
+              <button
+                onClick={() => handleUserClick('jojo')}
+                className={`w-full p-6 rounded-xl transition-all duration-300 border-2 ${
+                  selectedUser === 'jojo'
+                    ? 'bg-[#c084fc]/20 border-[#c084fc] shadow-lg shadow-[#c084fc]/30'
+                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-[#c084fc]/50'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-lg font-bold text-white">
+                    N
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xl font-bold text-[#c084fc]">JoJo's History</p>
+                    
+                  </div>
+                </div>
+              </button>
+
+              {/* A = DoDo Button */}
+              <button
+                onClick={() => handleUserClick('dodo')}
+                className={`w-full p-6 rounded-xl transition-all duration-300 border-2 ${
+                  selectedUser === 'dodo'
+                    ? 'bg-[#fbbf24]/20 border-[#fbbf24] shadow-lg shadow-[#fbbf24]/30'
+                    : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-[#fbbf24]/50'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-popcorn to-yellow-400 flex items-center justify-center text-lg font-bold text-night-900">
+                    A
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xl font-bold text-[#fbbf24]">DoDo's History</p>
+                    
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            {/* Close button */}
+            <button
+              onClick={() => setShowUserSelector(false)}
+              className="w-full mt-6 px-4 py-2 text-ink-400 hover:text-ink-200 text-sm transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Password Authentication Modal */}
+      {authenticatingUser && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <div className="flex flex-col items-center mb-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-popcorn/20 to-purple-500/20 rounded-full flex items-center justify-center mb-4 border-2 border-popcorn/30">
+                <Lock size={32} className="text-popcorn" />
+              </div>
+              <h2 className="text-2xl font-bold text-ink-100 text-center">
+                {authenticatingUser === 'jojo' ? 'JoJo' : 'DoDo'}'s Access
+              </h2>
+              <p className="text-ink-400 text-sm mt-2 text-center">
+                Enter password to continue
+              </p>
+            </div>
+
+            <form onSubmit={handlePasswordSubmit} className="space-y-5">
+              <div>
+                <label className="block text-xs font-bold text-ink-300 uppercase mb-2 ml-1">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full bg-night-900 border border-night-700 focus:border-popcorn rounded-xl px-5 py-4 pr-12 text-ink-100 placeholder-night-600 focus:outline-none transition-colors"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-ink-400 hover:text-ink-200 transition-colors"
+                    tabIndex={-1}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              {authError && (
+                <div className="bg-red-500/20 border border-red-500/50 rounded-lg px-4 py-3 text-red-400 text-sm">
+                  {authError}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="w-full bg-popcorn hover:bg-popcorn-glow text-night-900 font-bold text-lg py-4 rounded-xl transition-all hover:shadow-glow uppercase tracking-wide"
+              >
+                Unlock Access
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCloseAuth}
+                className="w-full px-4 py-2 text-ink-400 hover:text-ink-200 text-sm transition-colors"
+              >
+                Cancel
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

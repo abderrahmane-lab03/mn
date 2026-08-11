@@ -1,5 +1,5 @@
 import { useState, memo } from 'react';
-import { Play, Star, Clock, Tv, Film } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { MovieEntry } from '../types';
 import { ImageWithSkeleton } from './ImageWithSkeleton';
 
@@ -10,102 +10,87 @@ interface MovieCardProps {
 }
 
 export const MovieCard = memo(({ entry, onClick, selectedUser }: MovieCardProps) => {
+  const isWatched = entry.status === 'watched';
   const [imgError, setImgError] = useState(false);
 
-  const jojoRating = entry.ratings?.jojo;
-  const dodoRating = entry.ratings?.dodo;
-  const avgRating = entry.ratings 
-    ? ((entry.ratings.jojo + entry.ratings.dodo) / 2).toFixed(1) 
-    : (entry.rating ? entry.rating.toFixed(1) : null);
-
-  const displayImage = entry.posterUrl || entry.captures?.[0] || 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=600&q=80';
+  const displayText = entry.story || entry.reason;
+  const captureImage = entry.captures?.[0] || entry.posterUrl;
 
   return (
     <button
       type="button"
-      aria-label={`View details for ${entry.title}`}
+      aria-label={`View details for ${entry.title}, ${entry.type === 'movie' ? 'Movie' : 'TV Show'}`}
+      className="group relative bg-[#1a2332] rounded-2xl overflow-hidden shadow-2xl hover:shadow-glow hover:-translate-y-1 focus:shadow-glow focus:-translate-y-1 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-popcorn focus:ring-offset-2 focus:ring-offset-night-900 transition-all duration-300 cursor-pointer flex flex-col h-full border border-white/5 w-full text-left"
       onClick={onClick}
-      className="group relative flex flex-col w-full bg-[#1e293b]/70 border border-white/10 rounded-2xl overflow-hidden shadow-2xl hover:border-[#fbbf24]/50 hover:shadow-[#fbbf24]/10 transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-[#fbbf24]"
     >
-      {/* Netflix Poster Frame (2:3 Aspect Ratio) */}
-      <div className="relative w-full aspect-[2/3] bg-black/80 overflow-hidden">
-        {!imgError ? (
-          <ImageWithSkeleton
-            src={displayImage}
-            alt={entry.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-            containerClassName="w-full h-full"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-night-800 text-ink-400 p-4 text-center text-xs">
-            {entry.title}
-          </div>
-        )}
-
-        {/* Netflix Card Overlay Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-night-900 via-night-900/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
-
-        {/* Top Badges Bar */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between z-10 pointer-events-none">
-          {/* Media Type Badge */}
-          <span className="bg-black/60 backdrop-blur-md border border-white/10 text-white font-black text-[9px] uppercase px-2 py-1 rounded-md tracking-wider flex items-center gap-1 shadow-md">
-            {entry.type === 'tv' ? <Tv size={10} className="text-[#c084fc]" /> : <Film size={10} className="text-[#fbbf24]" />}
-            {entry.type === 'tv' ? 'TV' : 'MOVIE'}
-          </span>
-
-          {/* Rating Badge */}
-          {avgRating && (
-            <span className="bg-[#fbbf24] text-night-900 font-extrabold text-[10px] px-2 py-0.5 rounded-full shadow-lg flex items-center gap-1">
-              <Star size={10} className="fill-night-900" />
-              {avgRating}
-            </span>
+      {/* Header Section: Poster + Capture */}
+      <div className="relative h-44 w-full bg-[#0f172a] overflow-hidden flex">
+        {/* Capture Image Background (Right Side) */}
+        <div className="absolute inset-0 left-1/4">
+           {captureImage && !imgError ? (
+            <ImageWithSkeleton
+              src={captureImage}
+              alt={`${entry.title} capture`}
+              className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
+              containerClassName="w-full h-full"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <div className="w-full h-full bg-[#0f172a]" />
           )}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#0f172a] via-transparent to-transparent"></div>
         </div>
 
-        {/* Netflix Play Hover Circle Icon */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
-          <div className="w-14 h-14 rounded-full bg-[#fbbf24] text-night-900 flex items-center justify-center shadow-2xl transform scale-75 group-hover:scale-100 transition-transform duration-300">
-            <Play size={26} className="fill-night-900 ml-1" />
-          </div>
-        </div>
-
-        {/* Bottom Poster Info Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 z-10 flex flex-col justify-end">
-          <h3 className="text-base sm:text-lg font-black text-white leading-tight mb-1 group-hover:text-[#fbbf24] transition-colors drop-shadow">
-            {entry.title}
-          </h3>
-
-          {/* Details Metadata */}
-          <div className="flex flex-wrap items-center gap-2 text-[11px] text-ink-300 font-medium">
-            <span>{new Date(entry.date).getFullYear()}</span>
-            <span>•</span>
-            {entry.duration && (
-              <span className="flex items-center gap-1 text-ink-200">
-                <Clock size={11} />
-                {entry.duration}
-              </span>
-            )}
-            {entry.genres?.[0] && (
-              <>
-                <span>•</span>
-                <span className="uppercase text-[9px] font-bold text-[#fbbf24]/90 bg-[#fbbf24]/10 border border-[#fbbf24]/20 px-1.5 py-0.5 rounded">
-                  {entry.genres[0]}
-                </span>
-              </>
-            )}
-          </div>
-
-          {/* Dual Rating User Breakdown */}
-          {jojoRating !== undefined && dodoRating !== undefined && (
-            <div className="mt-2 pt-2 border-t border-white/10 flex items-center gap-3 text-[10px]">
-              <span className={`font-bold ${selectedUser === 'jojo' ? 'text-popcorn scale-105' : 'text-ink-300'}`}>
-                JoJo: <span className="text-[#fbbf24]">{jojoRating}★</span>
-              </span>
-              <span className={`font-bold ${selectedUser === 'dodo' ? 'text-[#c084fc] scale-105' : 'text-ink-300'}`}>
-                DoDo: <span className="text-[#c084fc]">{dodoRating}★</span>
-              </span>
+        {/* Poster Image (Left Side - "Main" element) */}
+        <div className="relative z-10 w-1/3 h-full p-2">
+            <div className="w-full h-full rounded-md overflow-hidden shadow-lg border border-white/10">
+                <ImageWithSkeleton
+                  src={entry.posterUrl || 'https://via.placeholder.com/150x225'}
+                  alt={`${entry.title} movie poster`}
+                  className="w-full h-full object-cover"
+                  containerClassName="w-full h-full"
+                />
             </div>
+        </div>
+
+        {/* Duration Badge (Top Left) */}
+        <div className="absolute top-3 left-1/3 ml-2 z-20">
+          <div className="bg-black/60 backdrop-blur-md text-[#fbbf24] text-[9px] font-black px-2 py-1 rounded-full flex items-center gap-1.5 border border-white/10 uppercase tracking-widest shadow-lg">
+             <Clock size={10} />
+             {entry.duration || 'N/A'}
+          </div>
+        </div>
+
+        {/* Date Badge (Top Right) */}
+        <div className="absolute top-0 right-4 bg-[#fbbf24] text-night-900 px-2.5 pt-1.5 pb-2 rounded-b-lg shadow-xl z-20">
+          <div className="text-[10px] font-black uppercase tracking-widest text-center leading-none mb-0.5">
+            {new Date(entry.date).toLocaleDateString(undefined, { month: 'short' })}
+          </div>
+          <div className="text-lg font-black text-center leading-none">
+             {new Date(entry.date).getDate()}
+          </div>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="p-5 flex flex-col flex-grow bg-[#1a2332]">
+        <h3 className="text-lg font-extrabold text-white leading-tight mb-1 group-hover:text-[#fbbf24] transition-colors">
+          {entry.title}
+        </h3>
+        
+        {/* Genre Row */}
+        <div className="flex items-center gap-2 mb-4">
+             <span className="text-[10px] text-ink-300 font-black uppercase tracking-[0.2em]">
+                 {entry.genres?.[0] || 'DRAMA'}
+             </span>
+        </div>
+
+        <div className="mt-auto space-y-4">
+          {/* Story Snippet */}
+          {displayText && (
+            <p className="text-sm text-ink-300 font-hand italic line-clamp-2 leading-relaxed opacity-80 border-l-2 border-white/5 pl-3">
+              "{displayText}"
+            </p>
           )}
         </div>
       </div>
